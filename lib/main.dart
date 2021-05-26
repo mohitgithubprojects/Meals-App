@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meals_app/categoriws_screen.dart';
+import 'package:meals_app/categoryMealsScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,15 +13,31 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.pink,
+        accentColor: Colors.amber,
+        canvasColor: Colors.white,
+        fontFamily: 'Raleway',
+        textTheme: ThemeData.light().textTheme.copyWith(
+              bodyText2: TextStyle(color: Colors.black),
+              bodyText1: TextStyle(color: Colors.black),
+              headline6: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'RobotoCondensed',
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
       ),
-      home: MyHomePage(title: 'IndiMeals'),
+      initialRoute: '/', // by default it is slash
+      routes: {
+        '/' : (ctx) => CategoriesScreen('IndiMeals'),  // it is the home screen
+        CategoryMealsScreen.routeName : (ctx) => CategoryMealsScreen(),
+      },
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
 
@@ -28,16 +46,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Text('Navigation Time !')
-      ),
+      body: Center(child: Text('Navigation Time !')),
     );
   }
 }
