@@ -27,6 +27,7 @@ class _MyAppState extends State<MyApp> {
   };
 
   List<Meal> _availableMeals = DUMMY_MEALS;
+  List<Meal> _favMeals = [];
 
   void _showToast(BuildContext context, String message) {
     final scaffold = ScaffoldMessenger.of(context);
@@ -63,6 +64,23 @@ class _MyAppState extends State<MyApp> {
 
   }
 
+  void _toggleFavs(String id){
+    final existingIndex = _favMeals.indexWhere((element) => element.id == id);
+    if(existingIndex >=0 ){
+      setState(() {
+        _favMeals.removeAt(existingIndex);
+      });
+    }else{
+      setState(() {
+        _favMeals.add(DUMMY_MEALS.firstWhere((element) => element.id == id));
+      });
+    }
+  }
+
+  bool _isMealFav(String id){
+    return _favMeals.any((element) => element.id == id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -84,10 +102,10 @@ class _MyAppState extends State<MyApp> {
       ),
       initialRoute: '/', // by default it is slash
       routes: {
-        '/' : (ctx) => TabsScreen('IndiMeals'),
+        '/' : (ctx) => TabsScreen('IndiMeals', _favMeals),
         CategoriesScreen.routeName : (ctx) => CategoriesScreen(),// it is the home screen
         CategoryMealsScreen.routeName : (ctx) => CategoryMealsScreen(_availableMeals),
-        MealDetailScreen.routeName : (ctx) => MealDetailScreen(),
+        MealDetailScreen.routeName : (ctx) => MealDetailScreen(_toggleFavs, _isMealFav),
         FiltersScreen.routeName : (ctx) => FiltersScreen(_filters,_setFilters),
       },
       debugShowCheckedModeBanner: false,
