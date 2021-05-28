@@ -1,14 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:meals_app/Models/Meal.dart';
 import 'package:meals_app/Screens/categoriws_screen.dart';
 import 'package:meals_app/Screens/categoryMealsScreen.dart';
+import 'package:meals_app/Screens/filtersScreen.dart';
 import 'package:meals_app/Screens/mealDetailScreen.dart';
+import 'package:meals_app/Screens/tabsScreen.dart';
+import 'package:meals_app/dummyData.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  Map<String, bool> _filters = {
+    'gluten':false,
+    'lactose':false,
+    'vegan':false,
+    'vegetarian':false,
+  };
+
+  List<Meal> _availableMeals = DUMMY_MEALS;
+
+  void _showToast(BuildContext context, String message) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _setFilters(Map<String , bool> filterData, BuildContext buildContext){
+    setState(() {
+      _filters = filterData;
+
+      _availableMeals = DUMMY_MEALS.where((element) {
+        if(_filters['gluten'] && !element.isGlutenFree){
+          return false;
+        }
+        if(_filters['lactose'] && !element.isLactoseFree) {
+          return false;
+        }
+        if(_filters['vegan'] && !element.isVegan){
+          return false;
+        }
+        if(_filters['vegetarian'] && !element.isVegetarian){
+          return false;
+        }
+        return true;
+      }).toList();
+    });
+
+    _showToast(buildContext, 'Filters Saved !');
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,9 +84,11 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/', // by default it is slash
       routes: {
-        '/' : (ctx) => CategoriesScreen('IndiMeals'),  // it is the home screen
-        CategoryMealsScreen.routeName : (ctx) => CategoryMealsScreen(),
+        '/' : (ctx) => TabsScreen('IndiMeals'),
+        CategoriesScreen.routeName : (ctx) => CategoriesScreen(),// it is the home screen
+        CategoryMealsScreen.routeName : (ctx) => CategoryMealsScreen(_availableMeals),
         MealDetailScreen.routeName : (ctx) => MealDetailScreen(),
+        FiltersScreen.routeName : (ctx) => FiltersScreen(_filters,_setFilters),
       },
       debugShowCheckedModeBanner: false,
     );
